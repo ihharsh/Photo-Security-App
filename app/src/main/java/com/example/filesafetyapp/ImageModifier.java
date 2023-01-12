@@ -16,31 +16,36 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class ImageModifier {
-    private static final String KEY = "1234567812345678";
-    private static final String KEY2 = "8765432112345678";
+    private static final String KEY = "1234567812345678"; // aes key
+    private static final String KEY2 = "8765432112345678"; // blowfish key
 
     public static byte[] modifyDataForEncryption(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
         // SecretKey secretKey = generateSecretKey();
         SecretKeySpec secretKey = new SecretKeySpec(KEY.getBytes(), "AES");
 
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE,secretKey);
+
+        Cipher cipherAES = Cipher.getInstance("AES/ECB/PKCS5Padding"); // TRANSFORMATION = "algo/blocklevel/padding"
+        cipherAES.init(Cipher.ENCRYPT_MODE,secretKey);
 
 
-        byte[] encryptedDataAES = cipher.doFinal(fileData);
+        byte[] encryptedDataAES = cipherAES.doFinal(fileData);
+
+
+
+
 
         SecretKeySpec blowfishKey = new SecretKeySpec(KEY2.getBytes(), "Blowfish");
         // Initialize the Blowfish cipher
         Cipher blowfishCipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
         blowfishCipher.init(Cipher.ENCRYPT_MODE, blowfishKey);
 
-// Encrypt the AES ciphertext with Blowfish
-        byte[] blowfishCiphertext = blowfishCipher.doFinal(encryptedDataAES);
+      // Encrypt the AES ciphertext with Blowfish
+        byte[] blowfishCipherEncryptedData = blowfishCipher.doFinal(encryptedDataAES); // this is the encrypted data retrived from AES encryption
 
 
 
-        return blowfishCiphertext;
+        return blowfishCipherEncryptedData;
     }
 
     public static byte[] modifyDataForDecryption(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {

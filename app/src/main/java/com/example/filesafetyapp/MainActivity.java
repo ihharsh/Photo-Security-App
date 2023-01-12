@@ -117,15 +117,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void selectFile() {
 
-
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         startActivityForResult(intent,PICK_FILE_REQUEST_CODE);
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    @Override protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode==PICK_FILE_REQUEST_CODE) {
@@ -153,13 +151,13 @@ public class MainActivity extends AppCompatActivity {
 
     // get uri then read bytes from that uri, modifydata, save file
     private void changeFileData(Intent data) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        // Get the selected file's URI
+        // Get the selected files URI
         Uri fileUri = data.getData();
 
-        // Grant temporary access to the file
-       // getContentResolver().grantUriPermission(getPackageName(), fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+         // Grant temporary access to the file // This is only applicable to system apps
+        // getContentResolver().grantUriPermission(getPackageName(), fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        // Read the file into a byte array
+        // convert file into byte array
         byte[] fileData = readFile(fileUri);
 
 
@@ -171,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         byte[] modifiedData;
 
         if(decryptCode== 1){
-             modifiedData = ImageModifier.modifyDataForDecryption(fileData);
+             modifiedData = ImageModifier.modifyDataForDecryption(fileData); // encrypted file's modified data is decrypted data
         } else{
              modifiedData = ImageModifier.modifyDataForEncryption(fileData);
         }
@@ -179,11 +177,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Write the modified data to the file
-        //writeFile(fileUri, modifiedData);
+        // writeFile(fileUri, modifiedData); // This is only applicable to system apps
         if (decryptCode == 1) {
             saveFiletoGallery(modifiedData);
         } else {
-            saveFiletxt(modifiedData);
+            saveFileEncrypted(modifiedData);
         }
 
 
@@ -204,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         if (decryptCode == 1) {
             saveFiletoGallery(modifiedData);
         } else {
-            saveFiletxt(modifiedData);
+            saveFileEncrypted(modifiedData);
         }
 
     }
@@ -234,10 +232,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // saves the file to the external file directory
-    private void saveFiletxt(byte[] data) throws IOException {
+    private void saveFileEncrypted(byte[] data) throws IOException {
 
         File externalFilesDir = getExternalFilesDir(null);
-        File file = new File(externalFilesDir, "encrypted.pdf");
+        File file = new File(externalFilesDir, "encrypted.txt");
 
 
 
@@ -273,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
 
     // returns the byte array of the file choosen
     private byte[] readFile(Uri fileUri) throws IOException {
-        // Read the file into a byte array
+
         InputStream inputStream = getContentResolver().openInputStream(fileUri);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
