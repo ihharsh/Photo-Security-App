@@ -75,7 +75,7 @@ public class ModifyData {
             outputStream.write(data);
             outputStream.close();
 
-            MediaStore.Images.Media.insertImage(context.getContentResolver(),file.getAbsolutePath(),"mediastore",null);
+            //MediaStore.Images.Media.insertImage(context.getContentResolver(),file.getAbsolutePath(),"mediastore",null);
 
             Toast.makeText(context, "Image saved to PhotoCrypto Folder", Toast.LENGTH_SHORT).show();
 
