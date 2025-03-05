@@ -1,6 +1,10 @@
 package com.example.filesafetyapp;
 
-import static com.example.filesafetyapp.MainActivity.decryptCode;
+
+import static com.example.filesafetyapp.encryptionType.aes;
+import static com.example.filesafetyapp.encryptionType.blowfish;
+import static com.example.filesafetyapp.encryptionType.both;
+import static com.example.filesafetyapp.encryptionType.isEncryptClicked;
 
 import android.content.Context;
 import android.content.Intent;
@@ -40,23 +44,56 @@ public class ModifyData {
         // Modify the file data
         //byte[] modifiedData = modifyData(fileData);
 
-        byte[] modifiedData;
+        byte[] modifiedData = new byte[0];
 
-        if(decryptCode== 1){
-            modifiedData = ImageModifier.modifyDataForDecryption(fileData); // encrypted file's modified data is decrypted data
-        } else{
-            modifiedData = ImageModifier.modifyDataForEncryption(fileData);
+        if(aes){
+
+            if(isEncryptClicked){
+                modifiedData = ImageModifier.modifyDataForEncryptionAES(fileData);
+                saveFileEncrypted(modifiedData,context);
+            }else {
+                modifiedData = ImageModifier.modifyDataForDecryptionAES(fileData);
+                saveFiletoGallery(modifiedData,context);
+            }
+
+
         }
+
+        if(blowfish){
+
+            if(isEncryptClicked){
+                modifiedData = ImageModifier.modifyDataForEncryptionBlowfish(fileData);
+                saveFileEncrypted(modifiedData,context);
+            }else {
+                modifiedData = ImageModifier.modifyDataForDecryptionBlowfish(fileData);
+                saveFiletoGallery(modifiedData,context);
+            }
+
+        }
+
+        if(both){
+            if(isEncryptClicked){
+                modifiedData = ImageModifier.modifyDataForEncryptionBoth(fileData);
+                saveFileEncrypted(modifiedData,context);
+            }else {
+                modifiedData = ImageModifier.modifyDataForDecryptionBoth(fileData);
+                saveFiletoGallery(modifiedData,context);
+            }
+        }
+
+
+
+//        if(decryptCode== 1){
+//            modifiedData = ImageModifier.modifyDataForDecryptionBoth(fileData); // encrypted file's modified data is decrypted data
+//        } else{
+//            modifiedData = ImageModifier.modifyDataForEncryptionBoth(fileData);
+//        }
 
 
 
         // Write the modified data to the file
         // writeFile(fileUri, modifiedData); // This is only applicable to system apps
-        if (decryptCode == 1) {
-            saveFiletoGallery(modifiedData,context);
-        } else {
-            saveFileEncrypted(modifiedData,context);
-        }
+
 
 
         //getContentResolver().revokeUriPermission(fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -70,7 +107,16 @@ public class ModifyData {
                 appGallery.mkdirs();
             }
 
-            File file = new File(appGallery,"decrypted_image.jpeg");
+        File file = null;
+        if(aes){
+            file = new File(appGallery, "decrypted_aes_image.jpeg");
+        }else if(blowfish){
+            file = new File(appGallery, "decrypted_blowfish_image.jpeg");
+        } else if(both) {
+            file = new File(appGallery, "decrypted_image.jpeg");
+        }
+
+           // File file = new File(appGallery,"decrypted_image.jpeg");
             OutputStream outputStream = new FileOutputStream(file);
             outputStream.write(data);
             outputStream.close();
@@ -88,7 +134,15 @@ public class ModifyData {
     private static void saveFileEncrypted(byte[] data,Context context) throws IOException {
 
         File externalFilesDir = context.getExternalFilesDir(null);
-        File file = new File(externalFilesDir, "encrypted.txt");
+        File file = null;
+        if(aes){
+             file = new File(externalFilesDir, "encrypted_aes.txt");
+        }else if(blowfish){
+             file = new File(externalFilesDir, "encrypted_blowfish.txt");
+        } else if(both) {
+            file = new File(externalFilesDir, "encrypted.txt");
+        }
+
 
 
 

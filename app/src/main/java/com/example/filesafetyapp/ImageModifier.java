@@ -19,7 +19,7 @@ public class ImageModifier {
     private static final String KEY_AES = "1234567812345678"; // aes key
     private static final String KEY_BLOWFISH = "8765432112345678"; // blowfish key
 
-    public static byte[] modifyDataForEncryption(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public static byte[] modifyDataForEncryptionBoth(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
         // SecretKey secretKey = generateSecretKey();
         SecretKeySpec secretKey = new SecretKeySpec(KEY_AES.getBytes(), "AES");
@@ -47,8 +47,7 @@ public class ImageModifier {
 
         return blowfishCipherEncryptedData;
     }
-
-    public static byte[] modifyDataForDecryption(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public static byte[] modifyDataForDecryptionBoth(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
         SecretKeySpec blowfishKey = new SecretKeySpec(KEY_BLOWFISH.getBytes(), "Blowfish");
         Cipher blowfishCipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
@@ -68,6 +67,63 @@ public class ImageModifier {
         return decryptedData;
 
     }
+    public static byte[] modifyDataForEncryptionAES(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
+        // SecretKey secretKey = generateSecretKey();
+        SecretKeySpec secretKey = new SecretKeySpec(KEY_AES.getBytes(), "AES");
+
+
+        Cipher cipherAES = Cipher.getInstance("AES/ECB/PKCS5Padding"); // TRANSFORMATION = "algo/blocklevel/padding"
+        cipherAES.init(Cipher.ENCRYPT_MODE,secretKey);
+
+
+        byte[] encryptedDataAES = cipherAES.doFinal(fileData);
+
+
+        return encryptedDataAES;
+    }
+    public static byte[] modifyDataForDecryptionAES(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+
+        // SecretKey secretKey = generateSecretKey();
+        SecretKeySpec secretKey = new SecretKeySpec(KEY_AES.getBytes(), "AES");
+
+
+        Cipher cipherAES = Cipher.getInstance("AES/ECB/PKCS5Padding"); // TRANSFORMATION = "algo/blocklevel/padding"
+        cipherAES.init(Cipher.DECRYPT_MODE,secretKey);
+
+
+        byte[] encryptedDataAES = cipherAES.doFinal(fileData);
+
+
+        return encryptedDataAES;
+    }
+    public static byte[] modifyDataForEncryptionBlowfish(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+
+
+        SecretKeySpec blowfishKey = new SecretKeySpec(KEY_BLOWFISH.getBytes(), "Blowfish");
+        // Initialize the Blowfish cipher
+        Cipher blowfishCipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
+        blowfishCipher.init(Cipher.ENCRYPT_MODE, blowfishKey);
+
+        // Encrypt the AES ciphertext with Blowfish
+        byte[] blowfishCipherEncryptedData = blowfishCipher.doFinal(fileData); // this is the encrypted data retrived from AES encryption
+
+
+        return blowfishCipherEncryptedData;
+    }
+    public static byte[] modifyDataForDecryptionBlowfish(byte[] fileData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+
+
+        SecretKeySpec blowfishKey = new SecretKeySpec(KEY_BLOWFISH.getBytes(), "Blowfish");
+        // Initialize the Blowfish cipher
+        Cipher blowfishCipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
+        blowfishCipher.init(Cipher.DECRYPT_MODE, blowfishKey);
+
+        // Encrypt the AES ciphertext with Blowfish
+        byte[] blowfishCipherEncryptedData = blowfishCipher.doFinal(fileData); // this is the encrypted data retrived from AES encryption
+
+
+        return blowfishCipherEncryptedData;
+    }
 
 }

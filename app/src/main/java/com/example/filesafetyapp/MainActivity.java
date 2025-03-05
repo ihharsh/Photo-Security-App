@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -28,6 +29,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.filesafetyapp.databinding.ActivityMainBinding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -55,30 +58,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final int SELECT_IMAGE_CODE =1;
-    public static  int decryptCode = 0;
-
-
-    ActivityResultLauncher<String> accessFileLauncher =
-            registerForActivityResult(
-                    new ActivityResultContracts.RequestPermission(),
-                    isGranted -> {
-                        if (isGranted) {
-                            selectFile();
-
-                        } else {
-                            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-
-    private void requestStoragePermission() {
-        accessFileLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-
+    private ActivityMainBinding binding;
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
 
 
         int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
@@ -91,61 +75,31 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        setContentView(R.layout.activity_main);
-        Button encrypt_btn = findViewById(R.id.encrypt_btn);
+        setContentView(binding.getRoot());
 
-        Button decrypt_button = findViewById(R.id.decrypt_button);
 
-        encrypt_btn.setOnClickListener(new View.OnClickListener() {
+        binding.encryptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                decryptCode = 0;
 
-              requestStoragePermission();
-               // userPrompt();
-
+                Intent intent = new Intent(MainActivity.this,encryptionType.class);
+                startActivity(intent);
 
             }
         });
 
-        decrypt_button.setOnClickListener(new View.OnClickListener() {
+        binding.decryptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                decryptCode = 1;
-                requestStoragePermission();
+                Intent intent = new Intent(MainActivity.this,decryptionType.class);
+                startActivity(intent);
 
             }
         });
 
     }
 
-    private void selectFile() {
-
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        startActivityForResult(intent,SELECT_IMAGE_CODE);
-
-    }
-
-    @Override protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode==SELECT_IMAGE_CODE) {
-            try
-            {
-                ModifyData.changeFileData(data,this);
-            } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException |
-                    NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-
-
-
-    }
 
 
 }
